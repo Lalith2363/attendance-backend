@@ -1,11 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from datetime import datetime, timedelta
 
 from app.db.deps import get_db
 from app.models.user import User
 from app.models.token import RefreshToken
-from app.schemas.auth import LoginRequest, TokenResponse
+from app.schemas.auth import TokenResponse
 from app.core.security import (
     verify_password,
     create_access_token,
@@ -13,16 +14,18 @@ from app.core.security import (
     REFRESH_TOKEN_EXPIRE_DAYS
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/auth")
 
 
-# 🔐 LOGIN
+# 🔐 LOGIN (OAuth2 Compatible)
 @router.post("/login", response_model=TokenResponse)
-def login(data: LoginRequest, db: Session = Depends(get_db)):
+def login(
+    form_data: OAuth2PasswordRequestForm = Depends(),
+    db: Session = Depends(get_db)
+):
+    user = db.query(User).filter(User.email == form_data.username).first()
 
-    user = db.query(User).filter(User.email == data.email).first()
-
-    if not user or not verify_password(data.password, user.password):
+    if not user or not verify_password(form_data.password, user.password):
         raise HTTPException(status_code=400, detail="Invalid credentials")
 
     access_token = create_access_token({
@@ -44,7 +47,8 @@ def login(data: LoginRequest, db: Session = Depends(get_db)):
 
     return {
         "access_token": access_token,
-        "refresh_token": refresh_token
+        "refresh_token": refresh_token,
+        "token_type": "bearer"
     }
 
 
@@ -66,7 +70,10 @@ def refresh_token(refresh_token: str, db: Session = Depends(get_db)):
         "sub": token_entry.user_email
     })
 
-    return {"access_token": new_access_token}
+    return {
+        "access_token": new_access_token,
+        "token_type": "bearer"
+    }
 
 
 # 🚪 LOGOUT (REVOKE TOKEN)

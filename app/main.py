@@ -14,6 +14,7 @@ from app.models.leave import Leave
 from app.models.user import User
 from app.models.shift import Shift
 from app.api.routes import payroll
+from app.api.routes import auth
 
 
 app = FastAPI()
@@ -30,6 +31,7 @@ app.include_router(designation.router)
 app.include_router(leave.router)
 app.include_router(report.router)
 app.include_router(payroll.router)
+app.include_router(auth.router)
 
 
 @app.get("/test-auth")

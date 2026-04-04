@@ -5,7 +5,7 @@ from app.core.security import SECRET_KEY, ALGORITHM
 from datetime import datetime
 
 # OAuth2 scheme
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 
 # 🔐 Get current user from JWT
