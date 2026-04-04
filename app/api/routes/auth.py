@@ -14,7 +14,7 @@ from app.core.security import (
     REFRESH_TOKEN_EXPIRE_DAYS
 )
 
-router = APIRouter(prefix="/auth")
+router = APIRouter()
 
 
 # 🔐 LOGIN (OAuth2 Compatible)
