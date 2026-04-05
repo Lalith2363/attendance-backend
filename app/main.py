@@ -2,7 +2,7 @@ from fastapi import FastAPI, Depends
 
 from app.db.database import Base, engine
 from app.api.deps import oauth2_scheme
-from app.middleware.security import SecurityMiddleware
+##from app.middleware.security import SecurityMiddleware
 
 # import routers
 from app.api.routes import (
@@ -21,7 +21,8 @@ import app.models
 
 app = FastAPI()
 
-app.add_middleware(SecurityMiddleware)
+print("App starting...")
+##app.add_middleware(SecurityMiddleware)
 
 Base.metadata.create_all(bind=engine)
 
